@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>لوحة إدارة دليل سلمية</title>
+<style>
+:root{--navy:#07345c;--blue:#087eea;--green:#13bb68;--gold:#ffbd16;--red:#ef5350;--bg:#f3f7fb;--card:#fff;--line:#e4edf5;--text:#10283d;--muted:#70859a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial;color:var(--text)}
+button,input,textarea,select{font:inherit}button{cursor:pointer;border:0}
+.top{background:linear-gradient(135deg,var(--navy),#0b568e);color:#fff;padding:18px 16px;position:sticky;top:0;z-index:5;box-shadow:0 4px 18px #07345c22}
+.topin{max-width:1100px;margin:auto;display:flex;gap:12px;align-items:center;justify-content:space-between}.brand{font-size:25px;font-weight:800}.brand small{display:block;font-size:12px;font-weight:500;opacity:.8;margin-top:2px}
+.logout{background:#ef5350;color:#fff;border-radius:12px;padding:11px 16px;font-weight:800}
+.wrap{max-width:1100px;margin:20px auto;padding:0 14px}.grid{display:grid;grid-template-columns:220px 1fr;gap:16px}
+.nav,.card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 7px 24px #173b5d0b}.nav{padding:10px;height:max-content;position:sticky;top:92px}
+.nav button{width:100%;text-align:right;background:transparent;padding:13px 12px;border-radius:12px;color:var(--text);font-weight:700}.nav button.active{background:#eaf5ff;color:var(--blue)}
+.panel{display:none}.panel.active{display:block}.card{padding:18px;margin-bottom:16px}.title{font-size:22px;font-weight:900;margin:0 0 5px}.sub{color:var(--muted);font-size:13px;margin-bottom:16px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.stat{padding:16px;border:1px solid var(--line);border-radius:15px;background:#fbfdff}.stat b{font-size:28px;display:block}.stat span{color:var(--muted);font-size:13px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{margin-bottom:12px}.field label{display:block;font-weight:800;font-size:13px;margin-bottom:6px}.field input,.field textarea,.field select{width:100%;padding:12px;border:1px solid #d7e3ed;border-radius:11px;background:#fff;outline:none}.field textarea{min-height:90px;resize:vertical}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{padding:11px 15px;border-radius:11px;font-weight:800}.primary{background:var(--blue);color:#fff}.success{background:var(--green);color:#fff}.danger{background:var(--red);color:#fff}.ghost{background:#edf5fb;color:var(--navy)}
+.list{display:grid;gap:9px}.item{border:1px solid var(--line);border-radius:13px;padding:12px;display:flex;align-items:center;justify-content:space-between;gap:10px}.item strong{display:block}.item small{color:var(--muted)}
+.tag{display:inline-block;padding:4px 8px;border-radius:999px;background:#eef7ff;color:var(--blue);font-size:11px;font-weight:800;margin-top:4px}
+.empty{padding:25px;text-align:center;color:var(--muted);border:1px dashed #cbd9e5;border-radius:13px}
+.preview{width:64px;height:52px;object-fit:cover;border-radius:10px;background:#edf3f7}
+.notice{padding:12px 14px;border-radius:12px;background:#fff8df;border:1px solid #f5df9a;color:#755a00;font-size:13px}
+#gate{position:fixed;inset:0;background:linear-gradient(135deg,#eef6fc,#dcecf8);display:flex;align-items:center;justify-content:center;padding:20px;z-index:20}.gatebox{width:min(420px,100%);background:#fff;border-radius:24px;padding:25px;box-shadow:0 20px 60px #07345c22;text-align:center}.gatebox h1{margin:0 0 8px}.gatebox p{color:var(--muted);font-size:14px}.gatebox input{width:100%;padding:14px;border:1px solid #d5e1eb;border-radius:12px;text-align:center;font-size:22px;letter-spacing:5px;margin:10px 0}.gatebox button{width:100%;padding:13px;border-radius:12px;background:var(--navy);color:#fff;font-weight:900}.err{color:var(--red);font-weight:700;min-height:24px;margin-top:8px}
+@media(max-width:760px){.grid{grid-template-columns:1fr}.nav{position:static;display:flex;overflow:auto;gap:6px;padding:7px}.nav button{min-width:max-content;text-align:center}.stats{grid-template-columns:1fr 1fr}.row{grid-template-columns:1fr}.topin{align-items:flex-start}.brand{font-size:20px}}
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div class="gatebox">
+    <h1>🔐 لوحة إدارة دليل سلمية</h1>
+    <p>أدخل رمز الإدارة للمتابعة</p>
+    <input id="pin" type="password" inputmode="numeric" maxlength="8" placeholder="••••">
+    <button onclick="login()">دخول الإدارة</button>
+    <div id="err" class="err"></div>
+  </div>
+</div>
+
+<header class="top">
+  <div class="topin">
+    <div class="brand">دليل سلمية<small>لوحة التحكم والإدارة</small></div>
+    <button class="logout" onclick="logout()">تسجيل الخروج</button>
+  </div>
+</header>
+
+<main class="wrap">
+<div class="grid">
+  <aside class="nav">
+    <button class="active" data-tab="dashboard">📊 الرئيسية</button>
+    <button data-tab="categories">🗂️ الأقسام</button>
+    <button data-tab="shops">🏪 المحلات</button>
+    <button data-tab="settings">⚙️ إعدادات الدليل</button>
+    <button data-tab="backup">💾 نسخ احتياطي</button>
+  </aside>
+
+  <section>
+    <div id="dashboard" class="panel active">
+      <div class="card">
+        <h2 class="title">مرحباً بك 👋</h2>
+        <div class="sub">من هنا تتحكم بمحتوى دليل سلمية على هذا الجهاز.</div>
+        <div class="stats">
+          <div class="stat"><b id="statShops">0</b><span>المحلات</span></div>
+          <div class="stat"><b id="statCats">0</b><span>الأقسام</span></div>
+          <div class="stat"><b id="statOffers">0</b><span>العروض</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>تنبيه مهم</h3>
+        <div class="notice">حالياً يتم حفظ التعديلات على الجهاز بواسطة LocalStorage. عند ربط Supabase لاحقاً يمكن جعل البيانات مشتركة بين الأجهزة.</div>
+      </div>
+    </div>
+
+    <div id="categories" class="panel">
+      <div class="card">
+        <h2 class="title">إدارة الأقسام</h2><div class="sub">أضف قسماً جديداً أو عدّل الاسم والأيقونة.</div>
+        <div class="row">
+          <div class="field"><label>اسم القسم</label><input id="catName" placeholder="مثلاً: مطاعم"></div>
+          <div class="field"><label>الأيقونة</label><input id="catIcon" placeholder="🍔"></div>
+        </div>
+        <div class="actions"><button class="btn primary" onclick="addCategory()">+ إضافة القسم</button><button class="btn ghost" onclick="seedCategories()">إضافة أقسام جاهزة</button></div>
+      </div>
+      <div class="card"><div id="catList" class="list"></div></div>
+    </div>
+
+    <div id="shops" class="panel">
+      <div class="card">
+        <h2 class="title">إضافة / تعديل محل</h2><div class="sub">املأ البيانات الأساسية، ويمكنك لاحقاً إضافة صور وعروض وخدمات.</div>
+        <input id="shopId" type="hidden">
+        <div class="row">
+          <div class="field"><label>اسم المحل *</label><input id="shopName" placeholder="اسم المحل"></div>
+          <div class="field"><label>القسم</label><select id="shopCategory"></select></div>
+        </div>
+        <div class="row">
+          <div class="field"><label>رقم الهاتف</label><input id="shopPhone" placeholder="09xxxxxxxx"></div>
+          <div class="field"><label>واتساب</label><input id="shopWhatsapp" placeholder="9639xxxxxxxx"></div>
+        </div>
+        <div class="row">
+          <div class="field"><label>العنوان</label><input id="shopAddress" placeholder="العنوان"></div>
+          <div class="field"><label>رابط الخريطة</label><input id="shopMap" placeholder="رابط Google Maps"></div>
+        </div>
+        <div class="row">
+          <div class="field"><label>الشعار (رابط صورة)</label><input id="shopLogo" placeholder="https://..."></div>
+          <div class="field"><label>صورة الغلاف (رابط صورة)</label><input id="shopCover" placeholder="https://..."></div>
+        </div>
+        <div class="row">
+          <div class="field"><label>الشعار/الجملة</label><input id="shopSlogan" placeholder="جملتك التعريفية"></div>
+          <div class="field"><label>لون المحل</label><input id="shopColor" type="color" value="#087eea"></div>
+        </div>
+        <div class="field"><label>الخدمات والمنتجات (كل سطر عنصر)</label><textarea id="shopServices" placeholder="مثال: صيانة موبايلات&#10;بيع إكسسوارات&#10;شحن رصيد"></textarea></div>
+        <div class="field"><label>العروض (كل سطر عرض)</label><textarea id="shopOffers" placeholder="مثال: خصم 10% هذا الأسبوع"></textarea></div>
+        <div class="field"><label>ساعات الدوام</label><input id="shopHours" placeholder="يومياً 9:00 - 22:00"></div>
+        <div class="actions"><button class="btn success" onclick="saveShop()">حفظ المحل</button><button class="btn ghost" onclick="clearShop()">مسح النموذج</button></div>
+      </div>
+      <div class="card"><div id="shopList" class="list"></div></div>
+    </div>
+
+    <div id="settings" class="panel">
+      <div class="card">
+        <h2 class="title">إعدادات الدليل</h2><div class="sub">هذه المعلومات يمكن عرضها في الواجهة الرئيسية.</div>
+        <div class="row">
+          <div class="field"><label>اسم الدليل</label><input id="siteName" value="دليل سلمية"></div>
+          <div class="field"><label>الجملة الرئيسية</label><input id="siteTagline" value="كل ما تحتاجه في مكان واحد"></div>
+        </div>
+        <div class="row">
+          <div class="field"><label>رقم واتساب إضافة المحلات</label><input id="siteWhatsapp" value="963932629639"></div>
+          <div class="field"><label>رسالة الترحيب</label><input id="siteWelcome" value="أهلاً بك في دليل سلمية"></div>
+        </div>
+        <button class="btn primary" onclick="saveSettings()">حفظ الإعدادات</button>
+      </div>
+    </div>
+
+    <div id="backup" class="panel">
+      <div class="card">
+        <h2 class="title">نسخ احتياطي واستعادة</h2><div class="sub">احفظ بيانات هذا الجهاز في ملف JSON واستعدها عند الحاجة.</div>
+        <div class="actions"><button class="btn success" onclick="exportData()">⬇️ تنزيل نسخة احتياطية</button><label class="btn ghost">⬆️ استعادة نسخة <input type="file" accept=".json" onchange="importData(event)" hidden></label></div>
+      </div>
+    </div>
+  </section>
+</div>
+</main>
+
+<script>
+const KEY='dalil_salamiyah_data_v2';
+const DEFAULT_CATS=[
+ {id:crypto.randomUUID(),name:'مطاعم ومقاهي',icon:'🍔'},
+ {id:crypto.randomUUID(),name:'موبايلات واتصالات',icon:'📱'},
+ {id:crypto.randomUUID(),name:'ملابس وأحذية',icon:'👕'},
+ {id:crypto.randomUUID(),name:'خدمات',icon:'🛠️'},
+ {id:crypto.randomUUID(),name:'مواد غذائية',icon:'🛒'},
+ {id:crypto.randomUUID(),name:'حلويات ومخابز',icon:'🍰'}
+];
+let data=load();
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||{categories:[],shops:[],settings:{}}}catch(e){return{categories:[],shops:[],settings:{}}}}
+function save(){localStorage.setItem(KEY,JSON.stringify(data));renderAll()}
+function norm(v){return String(v||'').trim().replace(/[٠-٩]/g,d=>String(d.charCodeAt(0)-1632))}
+function login(){if(norm(document.getElementById('pin').value)==='1234'){sessionStorage.setItem('dalil_admin','1');document.getElementById('gate').style.display='none';document.getElementById('err').textContent=''}else{document.getElementById('err').textContent='رمز الإدارة غير صحيح'}}
+function logout(){sessionStorage.removeItem('dalil_admin');location.reload()}
+if(sessionStorage.getItem('dalil_admin')==='1')document.getElementById('gate').style.display='none';
+document.getElementById('pin').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
+
+document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById(b.dataset.tab).classList.add('active')});
+
+function addCategory(){let n=document.getElementById('catName').value.trim();if(!n)return alert('اكتب اسم القسم');data.categories.push({id:Date.now().toString(),name:n,icon:document.getElementById('catIcon').value.trim()||'📌'});document.getElementById('catName').value='';document.getElementById('catIcon').value='';save()}
+function seedCategories(){if(data.categories.length)return alert('الأقسام موجودة حالياً');data.categories=DEFAULT_CATS.map(x=>({...x,id:Date.now()+Math.random()}));save()}
+function editCat(id){let c=data.categories.find(x=>x.id==id);if(!c)return;let n=prompt('اسم القسم',c.name);if(n===null)return;let i=prompt('الأيقونة',c.icon||'📌');c.name=n.trim()||c.name;c.icon=i||c.icon;save()}
+function delCat(id){if(!confirm('حذف القسم؟'))return;data.categories=data.categories.filter(x=>x.id!=id);save()}
+function renderCats(){let el=document.getElementById('catList');el.innerHTML=data.categories.length?data.categories.map(c=>`<div class="item"><div><strong>${esc(c.icon||'📌')} ${esc(c.name)}</strong><small>قسم في الدليل</small></div><div class="actions"><button class="btn ghost" onclick="editCat('${c.id}')">تعديل</button><button class="btn danger" onclick="delCat('${c.id}')">حذف</button></div></div>`).join(''):'<div class="empty">لا توجد أقسام بعد.</div>';document.getElementById('shopCategory').innerHTML='<option value="">بدون قسم</option>'+data.categories.map(c=>`<option value="${esc(c.id)}">${esc(c.icon||'📌')} ${esc(c.name)}</option>`).join('')}
+
+function saveShop(){let name=document.getElementById('shopName').value.trim();if(!name)return alert('اكتب اسم المحل');let id=document.getElementById('shopId').value;let obj={id:id||Date.now().toString(),name,categoryId:document.getElementById('shopCategory').value,phone:document.getElementById('shopPhone').value.trim(),whatsapp:document.getElementById('shopWhatsapp').value.trim(),address:document.getElementById('shopAddress').value.trim(),map:document.getElementById('shopMap').value.trim(),logo:document.getElementById('shopLogo').value.trim(),cover:document.getElementById('shopCover').value.trim(),slogan:document.getElementById('shopSlogan').value.trim(),color:document.getElementById('shopColor').value,services:lines('shopServices'),offers:lines('shopOffers'),hours:document.getElementById('shopHours').value.trim(),updatedAt:new Date().toISOString()};let ix=data.shops.findIndex(x=>x.id==id);if(ix>=0)data.shops[ix]=obj;else data.shops.push(obj);clearShop();save();alert('تم حفظ المحل بنجاح')}
+function lines(id){return document.getElementById(id).value.split('\\n').map(x=>x.trim()).filter(Boolean)}
+function editShop(id){let s=data.shops.find(x=>x.id==id);if(!s)return;document.getElementById('shopId').value=s.id;for(let [id,val] of Object.entries({shopName:s.name,shopCategory:s.categoryId,shopPhone:s.phone,shopWhatsapp:s.whatsapp,shopAddress:s.address,shopMap:s.map,shopLogo:s.logo,shopCover:s.cover,shopSlogan:s.slogan,shopHours:s.hours}))document.getElementById(id).value=val||'';document.getElementById('shopColor').value=s.color||'#087eea';document.getElementById('shopServices').value=(s.services||[]).join('\\n');document.getElementById('shopOffers').value=(s.offers||[]).join('\\n');document.querySelector('[data-tab="shops"]').click();scrollTo(0,0)}
+function delShop(id){if(!confirm('حذف المحل؟'))return;data.shops=data.shops.filter(x=>x.id!=id);save()}
+function clearShop(){['shopId','shopName','shopPhone','shopWhatsapp','shopAddress','shopMap','shopLogo','shopCover','shopSlogan','shopHours'].forEach(id=>document.getElementById(id).value='');document.getElementById('shopServices').value='';document.getElementById('shopOffers').value='';document.getElementById('shopColor').value='#087eea';document.getElementById('shopCategory').value=''}
+function renderShops(){let el=document.getElementById('shopList');el.innerHTML=data.shops.length?data.shops.map(s=>{let c=data.categories.find(x=>x.id==s.categoryId);return `<div class="item">${s.logo?`<img class="preview" src="${esc(s.logo)}" onerror="this.style.display='none'">`:''}<div style="flex:1"><strong>${esc(s.name)}</strong><small>${esc(c?c.name:'بدون قسم')} • ${esc(s.phone||'بدون هاتف')}</small>${s.offers?.length?`<span class="tag">${s.offers.length} عروض</span>`:''}</div><div class="actions"><button class="btn ghost" onclick="editShop('${s.id}')">تعديل</button><button class="btn danger" onclick="delShop('${s.id}')">حذف</button></div></div>`}).join(''):'<div class="empty">لا توجد محلات بعد.</div>'}
+
+function saveSettings(){data.settings={name:document.getElementById('siteName').value.trim(),tagline:document.getElementById('siteTagline').value.trim(),whatsapp:document.getElementById('siteWhatsapp').value.trim(),welcome:document.getElementById('siteWelcome').value.trim()};save();alert('تم حفظ الإعدادات')}
+function renderSettings(){let s=data.settings||{};if(s.name)document.getElementById('siteName').value=s.name;if(s.tagline)document.getElementById('siteTagline').value=s.tagline;if(s.whatsapp)document.getElementById('siteWhatsapp').value=s.whatsapp;if(s.welcome)document.getElementById('siteWelcome').value=s.welcome}
+function renderAll(){renderCats();renderShops();renderSettings();document.getElementById('statShops').textContent=data.shops.length;document.getElementById('statCats').textContent=data.categories.length;document.getElementById('statOffers').textContent=data.shops.reduce((n,s)=>n+(s.offers?.length||0),0)}
+function exportData(){let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='dalil-salamiyah-backup.json';a.click();URL.revokeObjectURL(a.href)}
+function importData(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let x=JSON.parse(r.result);if(!x.categories||!x.shops)throw Error();data=x;save();alert('تمت استعادة النسخة بنجاح')}catch(err){alert('ملف النسخة غير صالح')}};r.readAsText(f)}
+function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+renderAll();
+</script>
+</body>
+</html>
