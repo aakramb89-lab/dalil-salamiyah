@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>صفحة المحل | دليل سلمية</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Tahoma,sans-serif;background:#f4f8fb;color:#163a55}a{text-decoration:none;color:inherit}.top{background:#031b31;color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;gap:10px}.brand{font-weight:900;font-size:22px}.brand b{color:#ffbf16}.back{background:#087fe3;padding:9px 14px;border-radius:12px}.wrap{max-width:1050px;margin:25px auto;padding:0 15px}.hero{background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 8px 30px #0001}.cover{height:300px;background:#123e5d center/cover no-repeat;display:grid;place-items:center;position:relative}.cover img{width:100%;height:100%;object-fit:cover}.logo{position:absolute;bottom:-45px;right:30px;width:100px;height:100px;border-radius:22px;background:#fff;box-shadow:0 5px 20px #0002;display:grid;place-items:center;font-size:38px;font-weight:900;overflow:hidden;border:4px solid #fff}.logo img{width:100%;height:100%;object-fit:cover}.body{padding:65px 30px 30px}.badge{display:inline-block;background:#e9f4fc;color:#087fe3;border-radius:20px;padding:7px 12px;font-weight:800}.title{display:flex;justify-content:space-between;gap:15px;align-items:flex-start;flex-wrap:wrap}.title h1{margin:12px 0 6px;font-size:34px}.slogan{color:#71879a;font-size:17px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:20px}.box{background:#f8fbfd;border:1px solid #e2ebf1;border-radius:16px;padding:16px}.box b{display:block;margin-bottom:7px}.services,.offers{display:flex;gap:8px;flex-wrap:wrap}.pill{padding:8px 11px;background:#fff;border:1px solid #dce7ee;border-radius:20px}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}.btn{padding:12px 17px;border-radius:12px;font-weight:900;background:#087fe3;color:#fff}.green{background:#13bd68}.gallery{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}.gallery img{width:100%;height:150px;object-fit:cover;border-radius:12px}.empty{padding:60px;text-align:center}.muted{color:#71879a}@media(max-width:700px){.grid{grid-template-columns:1fr}.gallery{grid-template-columns:repeat(2,1fr)}.cover{height:230px}.body{padding:60px 18px 22px}.title h1{font-size:28px}}
+</style>
+</head>
+<body>
+<header class="top"><a class="brand" href="index.html">دليل <b>سلمية</b></a><a class="back" href="index.html">← العودة للموقع</a></header>
+<main class="wrap"><div id="app" class="empty">جارٍ تحميل صفحة المحل...</div></main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL='https://fwusmydbkxuxdhocwsxk.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY='sb_publishable_O53L9s6fbvwn_BZ8DEVKCA_e7C9kgoF';
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+const arr=x=>Array.isArray(x)?x:[];
+async function load(){
+ let shops=[];
+ try{const {data,error}=await sb.from('salamiyah_data').select('value').eq('id','salamiyah_shops').maybeSingle();if(error)throw error;shops=arr(data?.value);localStorage.setItem('salamiyah_shops',JSON.stringify(shops));}catch(e){try{shops=arr(JSON.parse(localStorage.getItem('salamiyah_shops')||'[]'))}catch(_) {shops=[]}}
+ const id=new URLSearchParams(location.search).get('id');const x=shops.find(s=>String(s.id)===String(id));
+ if(!x){document.getElementById('app').innerHTML='<h2>المحل غير موجود</h2><p class="muted">قد يكون المحل محذوفاً أو الرابط غير صحيح.</p>';return}
+ document.title=(x.name||'المحل')+' | دليل سلمية';
+ const phone=String(x.phone||'').replace(/\D/g,'');const wa=String(x.whatsapp||x.phone||'').replace(/\D/g,'');
+ const cover=x.cover?`<img src="${esc(x.cover)}" alt="${esc(x.name)}">`:'';const logo=x.logo&&String(x.logo).startsWith('data:')?`<img src="${esc(x.logo)}" alt="">`:esc(x.logo||String(x.name||'م').charAt(0));
+ const gallery=arr(x.gallery);const hours=x.hours||{};const hoursText=typeof x.hours==='string'?x.hours:[hours.morningOpen&&hours.morningClose?`صباحاً ${hours.morningOpen} - ${hours.morningClose}`:'',hours.eveningOpen&&hours.eveningClose?`مساءً ${hours.eveningOpen} - ${hours.eveningClose}`:''].filter(Boolean).join(' | ');
+ document.getElementById('app').className='hero';document.getElementById('app').innerHTML=`<div class="cover" style="background:${esc(x.theme||'#123e5d')}">${cover}<div class="logo">${logo}</div></div><div class="body"><div class="title"><div><span class="badge">${esc(x.cat||'أخرى')}</span><h1>${esc(x.name)}</h1><div class="slogan">${esc(x.slogan||x.desc||'')}</div></div><div>${x.rating?`⭐ ${esc(x.rating)} (${esc(x.reviews||'0')})`:''}</div></div><div class="grid"><div class="box"><b>📍 العنوان</b>${esc(x.address||'غير محدد')}</div><div class="box"><b>🕐 أوقات الدوام</b>${esc(hoursText||'غير محددة')}</div><div class="box"><b>🛠️ الخدمات</b><div class="services">${arr(x.services).map(v=>`<span class="pill">${esc(v)}</span>`).join('')||'<span class="muted">لا توجد معلومات</span>'}</div></div><div class="box"><b>🎁 العروض</b><div class="offers">${arr(x.offers).map(v=>`<span class="pill">${esc(v)}</span>`).join('')||'<span class="muted">لا توجد عروض حالياً</span>'}</div></div></div><div class="actions">${phone?`<a class="btn" href="tel:${phone}">📞 اتصال</a>`:''}${wa?`<a class="btn green" target="_blank" href="https://wa.me/${wa}">💬 واتساب</a>`:''}${x.maps?`<a class="btn" target="_blank" href="${esc(x.maps)}">📍 فتح الخريطة</a>`:''}</div>${gallery.length?`<h2>📷 معرض المحل</h2><div class="gallery">${gallery.map(v=>`<img src="${esc(v)}" alt="${esc(x.name)}">`).join('')}</div>`:''}</div>`;
+}
+load();
+</script>
+</body></html>
