@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#07345c"><title>لوحة إدارة دليل سلمية</title>
+<style>
+*{box-sizing:border-box}body{font-family:Tajawal,Arial,sans-serif;background:#031a30;margin:0;padding:18px;color:#123b5e}
+.box{max-width:1180px;margin:auto;background:#fff;padding:25px;border-radius:25px;box-shadow:0 15px 50px #0006}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+h1,h2{color:#07345c}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.full{grid-column:1/-1}
+input,textarea,select{width:100%;padding:12px;margin:6px 0 12px;border:1px solid #d7e2ec;border-radius:12px;font-size:15px;background:#fff}
+button,.btn{background:#0a83df;color:#fff;border:0;padding:11px 18px;border-radius:12px;cursor:pointer;font-weight:900;text-decoration:none;display:inline-block}
+.gold{background:#ffbd16;color:#153554}.dark{background:#07345c}.danger{background:#a51d2d}.green{background:#13bb68}
+.row{border:1px solid #e1eaf1;border-radius:15px;padding:14px;margin-top:10px}.actions{display:flex;gap:7px;flex-wrap:wrap}
+.catrow,.sortrow{display:grid;grid-template-columns:58px 1fr auto;gap:8px;align-items:center;background:#f4f8fb;padding:10px;border-radius:12px;margin:7px 0}
+.catrow input,.sortrow input{margin:0}.pill{font-size:12px;color:#fff;background:#07345c;border-radius:20px;padding:4px 9px}
+.hint{font-size:12px;color:#71889b}.preview{width:65px;height:45px;object-fit:cover;border-radius:9px;border:1px solid #ddd}
+.sectionBox{border:1px solid #e1eaf1;border-radius:18px;padding:17px;margin:16px 0}.filebox{border:2px dashed #cbdbe8;border-radius:14px;padding:12px;background:#f8fbfd}.filebox input{margin:7px 0 0}
+.thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.thumbs img{width:82px;height:60px;object-fit:cover;border-radius:10px;border:1px solid #d8e2ea}
+.notice{background:#eaf7ef;border:1px solid #bde6ca;color:#166534;border-radius:12px;padding:11px;font-size:13px;margin-bottom:10px}
+.colorLine{display:flex;gap:10px;align-items:center}.colorLine input[type=color]{width:60px;height:45px;padding:3px}.checkgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.check{display:flex;align-items:center;gap:8px;background:#f7fafc;border:1px solid #e3ebf1;border-radius:12px;padding:10px}.check input{width:auto;margin:0}
+.previewSite{background:#031b31;border-radius:18px;padding:18px;color:#fff}.miniHero{border-radius:15px;padding:22px;text-align:center;background:linear-gradient(135deg,#07345c,#0a83df);margin-bottom:12px}
+.styleBtns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.styleBtns button{background:#edf4fa;color:#174362;border:1px solid #d5e4ef}.styleBtns button.active{background:#07345c;color:#fff}
+@media(max-width:700px){.grid{grid-template-columns:1fr}.full{grid-column:auto}.catrow,.sortrow{grid-template-columns:48px 1fr}.catrow .cat-actions,.sortrow .cat-actions{grid-column:1/-1}.box{padding:16px}.actions button,.actions a{flex:1;text-align:center}.styleBtns{grid-template-columns:1fr}}
+.whyAdmin{border:1px solid #e1eaf1;border-radius:15px;padding:14px;margin-top:10px;background:#f8fbfd}.whyAdminGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.whyAdmin .mini{width:70px;height:55px;object-fit:cover;border-radius:9px;border:1px solid #ddd}.whyAdminActions{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.whyAdminActions button{padding:8px 11px}.whyVisible{display:flex;align-items:center;gap:7px}.whyVisible input{width:auto;margin:0}@media(max-width:700px){.whyAdminGrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<script>
+(function(){
+  try {
+    var g=document.getElementById("adminGate"), a=document.getElementById("adminApp");
+    if(g) g.style.display="none";
+    if(a) a.style.display="block";
+  } catch(e) {}
+  window.addEventListener("error",function(e){
+    var s=document.getElementById("cloudStatus");
+    if(s && !s.textContent.includes("خطأ")) s.textContent="⚠️ لوحة الإدارة تعمل، وتعذر تحميل جزء من البيانات فقط.";
+  });
+})();
+</script>
+<div id="adminGate" style="position:fixed;inset:0;background:#031a30;z-index:9999;display:none;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#fff;padding:25px;border-radius:20px;width:min(420px,100%);text-align:center">
+    <h2>🔐 دخول الإدارة</h2><p>رمز الدخول إلى لوحة الإدارة</p>
+    <input id="adminPin" type="password" inputmode="numeric" placeholder="1234" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:12px">
+    <button onclick="unlockAdmin()" class="dark" style="margin-top:10px;width:100%">دخول</button>
+    <div id="gateMsg" style="color:#a51d2d;font-weight:700;margin-top:8px"></div>
+  </div>
+</div>
+
+<div class="box" id="adminApp" style="display:block !important">
+  <div class="top">
+    <div><h1>⚙️ لوحة إدارة دليل سلمية</h1><small>تحكم كامل بشكل الواجهة الرئيسية والمحتوى من مكان واحد.</small><div class="notice" style="margin-top:8px">☁️ البيانات مرتبطة الآن بـ <b>Supabase</b> مع حفظ محلي مؤقت. أي إضافة أو تعديل من لوحة الإدارة يُرفع إلى السحابة، والموقع الرئيسي يقرأ البيانات من السحابة على الهاتف والكمبيوتر.</div></div>
+    <div class="actions"><a href="./index.html" class="btn dark">فتح الموقع</a><button onclick="logout()" class="danger">تسجيل الخروج</button></div>
+  </div>
+
+  <div class="sectionBox">
+    <h2>🎨 تصميم الواجهة الرئيسية</h2>
+    <div class="notice">غيّر التصميم والألوان وطريقة عرض الأقسام والمحلات، ثم اضغط حفظ. بيانات المحلات الموجودة لا تُحذف.</div>
+    <div class="full" style="margin:12px 0"><label>🎭 الثيم الجاهز — اختر شكلاً للموقع ثم احفظه</label><div class="styleBtns" id="themePresets">
+      <button type="button" data-theme="ocean" onclick="applyThemePreset('ocean')">🌊 أزرق بحري</button>
+      <button type="button" data-theme="dark" onclick="applyThemePreset('dark')">🌙 داكن</button>
+      <button type="button" data-theme="green" onclick="applyThemePreset('green')">🌿 أخضر</button>
+      <button type="button" data-theme="purple" onclick="applyThemePreset('purple')">💜 بنفسجي</button>
+      <button type="button" data-theme="warm" onclick="applyThemePreset('warm')">☀️ دافئ</button>
+    </div></div>
+    <div class="notice" id="cloudStatus" style="background:#eef6ff;border-color:#c7def5;color:#174b70">☁️ جارٍ الاتصال بـ Supabase...</div>
+    <div class="grid">
+      <div><label>اللون الرئيسي</label><div class="colorLine"><input id="primaryColor" type="color"><input id="primaryText" placeholder="#087fe3"></div></div>
+      <div><label>اللون الذهبي/الإبراز</label><div class="colorLine"><input id="accentColor" type="color"><input id="accentText" placeholder="#ffbf16"></div></div>
+      <div><label>خلفية الموقع</label><div class="colorLine"><input id="bgColor" type="color"><input id="bgText" placeholder="#031b31"></div></div>
+      <div><label>خلفية البطاقات</label><div class="colorLine"><input id="cardColor" type="color"><input id="cardText" placeholder="#ffffff"></div></div>
+      <div class="full"><label>شكل الأقسام</label><div class="styleBtns" id="catStyles">
+        <button type="button" data-v="circle">دوائر وأيقونات</button><button type="button" data-v="cards">بطاقات</button><button type="button" data-v="list">قائمة</button>
+      </div></div>
+      <div class="full"><label>شكل المحلات</label><div class="styleBtns" id="shopStyles">
+        <button type="button" data-v="card">بطاقات</button><button type="button" data-v="compact">بطاقات صغيرة</button><button type="button" data-v="list">قائمة</button>
+      </div></div>
+      <div><label>ترتيب المحلات</label><select id="shopOrder"><option value="newest">الأحدث أولاً</option><option value="oldest">الأقدم أولاً</option><option value="name">حسب الاسم</option></select></div>
+      <div><label>عدد المحلات الظاهرة في الصفحة</label><input id="shopLimit" type="number" min="1" max="100" value="20"></div>
+      <div class="full checkgrid">
+        <label class="check"><input id="showCategories" type="checkbox"> إظهار الأقسام</label>
+        <label class="check"><input id="showNewShops" type="checkbox"> إظهار شارة «جديد»</label>
+        <label class="check"><input id="showWhy" type="checkbox"> إظهار قسم «لماذا دليل سلمية؟»</label>
+        <label class="check"><input id="showAdd" type="checkbox"> إظهار «أضف محلك الآن»</label>
+        <label class="check"><input id="showFooter" type="checkbox"> إظهار التذييل</label>
+      </div>
+    </div>
+    <button class="green" onclick="saveDesign()">💾 حفظ تصميم الواجهة</button>
+  </div>
+
+  <div class="sectionBox">
+    <h2>✨ محرر «لماذا دليل سلمية؟»</h2>
+    <div class="notice">تحكم كامل بالقسم: العنوان والوصف، الخلفية والصورة، الألوان، الشفافية، شكل العرض، وإضافة/تعديل/حذف وترتيب الميزات.</div>
+    <div class="grid">
+      <div><label>عنوان القسم</label><input id="whyTitle" placeholder="لماذا دليل سلمية؟"></div>
+      <div><label>وصف القسم</label><input id="whyDesc" placeholder="محلك أقرب لزبائنك..."></div>
+      <div><label>لون الخلفية الأول</label><div class="colorLine"><input id="whyBg1" type="color"><input id="whyBg1Text"></div></div>
+      <div><label>لون الخلفية الثاني</label><div class="colorLine"><input id="whyBg2" type="color"><input id="whyBg2Text"></div></div>
+      <div><label>لون النص</label><div class="colorLine"><input id="whyTextColor" type="color"><input id="whyTextText"></div></div>
+      <div><label>لون وصف الميزات</label><div class="colorLine"><input id="whyDescColor" type="color"><input id="whyDescText"></div></div>
+      <div class="full filebox"><b>صورة خلفية القسم</b><input id="whyBgFile" type="file" accept="image/*"><div id="whyBgPreview" class="thumbs"></div><div class="actions"><button type="button" class="danger" onclick="removeWhyBg()">حذف صورة الخلفية</button></div></div>
+      <div><label>شفافية الطبقة فوق الصورة: <span id="whyOverlayVal">15%</span></label><input id="whyOverlay" type="range" min="0" max="80" value="15" oninput="whyOverlayVal.textContent=this.value+'%'"></div>
+      <div><label>طريقة عرض الميزات</label><div class="styleBtns" id="whyLayouts"><button type="button" data-v="grid">4 أعمدة</button><button type="button" data-v="cards">بطاقات</button><button type="button" data-v="list">قائمة</button></div></div>
+    </div>
+    <div class="top" style="margin-top:15px"><h3 style="margin:0">📌 الميزات</h3><button class="gold" onclick="addWhyItem()">+ إضافة ميزة</button></div>
+    <div id="whyItemsAdmin"></div>
+    <button class="green" onclick="saveWhySettings()">💾 حفظ قسم لماذا دليل سلمية</button>
+  </div>
+
+  <div class="sectionBox">
+    <h2>🖼️ الهوية والواجهة العلوية</h2>
+    <div class="grid">
+      <div class="filebox"><b>خلفية منطقة الترحيب</b><input id="heroFile" type="file" accept="image/*"><div id="heroPreview" class="thumbs"></div></div>
+      <div class="filebox"><b>لوغو دليل سلمية</b><input id="siteLogoFile" type="file" accept="image/*"><div id="logoPreview" class="thumbs"></div></div>
+      <div><label>عنوان الترحيب</label><input id="heroTitle" placeholder="دليل سلمية"></div>
+      <div><label>الجملة الرئيسية</label><input id="heroSubtitle" placeholder="اكتشف أفضل المحلات والخدمات في مدينتك"></div>
+      <div><label>النص الصغير تحت العنوان</label><input id="heroSubtag" placeholder="تسوّق • تواصل • ادعم محلك المحلي"></div>
+      <div><label>النص الصغير تحت الشعار</label><input id="brandSmall" placeholder="كل ما تحتاجه في مكان واحد"></div>
+      <div><label>رقم واتساب إضافة المحلات</label><input id="siteWhatsapp" placeholder="963932629639"></div>
+      <div><label>نص زر «أضف محلك»</label><input id="addButtonText" placeholder="+ إضافة محل عبر واتساب"></div>
+      <div class="full"><label>رسالة واتساب عند الضغط على «أضف محلك»</label><textarea id="addWhatsappMessage" rows="4" placeholder="مرحباً، أرغب بإضافة محلي إلى دليل سلمية. اسم المحل: ..."></textarea><small class="hint">اكتب الرسالة كما تريد أن تصل لك على واتساب، ويمكنك تغييرها بأي وقت.</small></div>
+    </div>
+    <button class="green" onclick="saveSiteSettings()">💾 حفظ الهوية</button>
+  </div>
+
+  <div class="sectionBox">
+    <h2>📂 إدارة الأقسام</h2>
+    <div class="grid"><input id="newCat" placeholder="اسم القسم الجديد"><input id="newIcon" placeholder="أيقونة مثل 🛒">
+      <button class="gold" onclick="addCat()">+ إضافة قسم</button><button class="dark" onclick="resetCats()">استعادة الافتراضي</button>
+    </div>
+    <p class="hint">يمكنك تغيير اسم القسم والأيقونة وترتيب الأقسام، ويمكن إخفاء قسم من الواجهة دون حذفه.</p>
+    <div id="catList"></div>
+  </div>
+
+  <div class="sectionBox">
+    <h2>🏪 إضافة / تعديل محل</h2>
+    <div class="grid">
+      <div><label>اسم المحل *</label><input id="name"></div><div><label>القسم</label><select id="cat"></select></div>
+      <div><label>رقم الهاتف</label><input id="phone" placeholder="09xxxxxxxx"></div><div><label>رقم واتساب</label><input id="whatsapp" placeholder="9639xxxxxxxx"></div>
+      <div><label>العنوان</label><input id="address" placeholder="سلمية - ..."></div><div><label>رابط الخرائط</label><input id="maps" placeholder="رابط Google Maps"></div>
+      <div class="full"><label>وصف قصير</label><textarea id="desc" rows="2"></textarea></div>
+      <div class="filebox"><b>شعار المحل</b><input id="logoFile" type="file" accept="image/*"><div id="logoShopPreview" class="thumbs"></div></div>
+      <div class="filebox"><b>غلاف المحل</b><input id="coverFile" type="file" accept="image/*"><div id="coverShopPreview" class="thumbs"></div></div>
+      <div class="filebox full"><b>صور معرض المحل</b><input id="galleryFiles" type="file" accept="image/*" multiple><div id="galleryPreview" class="thumbs"></div></div>
+      <div><label>لون هوية المحل</label><input id="theme" type="color" value="#087ee3"></div><div><label>عبارة المحل</label><input id="slogan" placeholder="مثلاً: كل شي للتقنية بين إيديك"></div>
+      <div class="full"><label>الخدمات (كل عنصر بفاصلة)</label><input id="services" placeholder="شحن رصيد, بطاقات إنترنت, إكسسوارات"></div>
+      <div class="full"><label>العروض (كل عنصر بفاصلة)</label><input id="offers" placeholder="خصم اليوم, عرض خاص"></div>
+      <div class="full"><label>🕐 أوقات الدوام</label><div class="grid">
+        <div><label>فتح صباحاً</label><input id="openMorning" type="time" value="09:00"></div><div><label>إغلاق ظهراً</label><input id="closeAfternoon" type="time" value="13:00"></div>
+        <div><label>فتح مساءً</label><input id="openEvening" type="time" value="16:00"></div><div><label>إغلاق مساءً</label><input id="closeEvening" type="time" value="22:00"></div>
+      </div></div>
+    </div>
+    <button class="green" onclick="saveShop()">💾 حفظ المحل</button> <button class="dark" onclick="resetForm()">تفريغ النموذج</button>
+  </div>
+
+  <div class="sectionBox"><h2>📋 المحلات المضافة</h2><div id="list"></div></div>
+</div>
+
+<script>
+const SUPABASE_URL='https://fwusmydbkxuxdhocwsxk.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY='sb_publishable_O53L9s6fbvwn_BZ8DEVKCA_e7C9kgoF';
+let sb=(window.supabase&&typeof window.supabase.createClient==='function')?window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY):null;
+const CLOUD_KEYS=['salamiyah_shops','salamiyah_categories','salamiyah_site_settings'];
+async function cloudGetAll(){const {data,error}=await sb.from('salamiyah_data').select('id,value').in('id',CLOUD_KEYS);if(error)throw error;return data||[]}
+async function cloudSet(id,value){if(!sb) throw new Error('Supabase library unavailable'); const {error}=await sb.from('salamiyah_data').upsert({id,value,updated_at:new Date().toISOString()},{onConflict:'id'});if(error)throw error}
+async function hydrateCloud(){try{const rows=await cloudGetAll();const found=new Set((rows||[]).map(r=>r.id));for(const r of (rows||[])){localStorage.setItem(r.id,JSON.stringify(r.value))}for(const id of CLOUD_KEYS){if(!found.has(id)){let raw=localStorage.getItem(id);if(raw){try{await cloudSet(id,JSON.parse(raw))}catch(e){console.warn('Supabase bootstrap failed for',id,e)}}}}localStorage.setItem('salamiyah_cloud_ok','1');renderCats();renderCatSelect();renderDesign();renderSettings();renderWhySettings();render()}catch(e){console.warn('Supabase sync failed',e);localStorage.setItem('salamiyah_cloud_ok','0');throw e}}
+async function persist(id,value){
+  localStorage.setItem(id,JSON.stringify(value));
+  localStorage.setItem('salamiyah_sync_version',String(Date.now()));
+  try{
+    await cloudSet(id,value);
+    localStorage.setItem('salamiyah_cloud_ok','1');
+    return true;
+  }catch(e){
+    console.warn('Supabase save failed',e);
+    localStorage.setItem('salamiyah_cloud_ok','0');
+    return false;
+  }
+}
+const key='salamiyah_shops',catKey='salamiyah_categories',settingsKey='salamiyah_site_settings';
+const seedCats=[['أخرى','•••'],['صيدليات','💊'],['ألبسة وأحذية','👕'],['منزل وأدوات','⌂'],['مطاعم وكافيهات','🍴'],['مواد غذائية','🛒'],['اتصالات وإلكترونيات','📱'],['تجميل وعناية','💇'],['رياضة ولياقة','🏋']];
+let editId=null;
+
+function unlockAdmin(){const el=document.getElementById('adminPin'),msg=document.getElementById('gateMsg'),gate=document.getElementById('adminGate'),app=document.getElementById('adminApp');const p=String(el?.value||'').trim().replace(/[٠-٩]/g,d=>String(d.charCodeAt(0)-1632));if(p!=='1234'){if(msg)msg.textContent='رمز الإدارة غير صحيح';if(el){el.value='';el.focus()}return}sessionStorage.setItem('salamiyah_admin','1');if(gate)gate.style.display='none';if(app)app.style.display='block'}
+function logout(){sessionStorage.removeItem('salamiyah_admin');location.reload()}
+const adminPinEl=document.getElementById('adminPin');if(adminPinEl)adminPinEl.addEventListener('keydown',e=>{if(e.key==='Enter')unlockAdmin()});
+const adminGateEl=document.getElementById('adminGate'),adminAppEl=document.getElementById('adminApp');if(sessionStorage.getItem('salamiyah_admin')==='1'){if(adminGateEl)adminGateEl.style.display='none';if(adminAppEl)adminAppEl.style.display='block'}else{if(adminGateEl)adminGateEl.style.display='none';if(adminAppEl)adminAppEl.style.display='block'}
+
+function cats(){try{let x=JSON.parse(localStorage.getItem(catKey));return Array.isArray(x)&&x.length?x:seedCats}catch(e){return seedCats}}
+function data(){try{let x=JSON.parse(localStorage.getItem(key));return Array.isArray(x)?x:[]}catch(e){return[]}}
+function settings(){try{return JSON.parse(localStorage.getItem(settingsKey)||'{}')}catch(e){return{}}}
+function esc(s=''){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function saveCats(a){persist(catKey,a);renderCats();renderCatSelect()}
+function addCat(){let n=newCat.value.trim(),ic=newIcon.value.trim()||'📌';if(!n)return alert('اكتب اسم القسم');let a=cats();if(a.some(x=>x[0]===n))return alert('القسم موجود');a.push([n,ic]);saveCats(a);newCat.value='';newIcon.value=''}
+function editCat(i){let a=cats(),n=prompt('اسم القسم',a[i][0]);if(n===null)return;let ic=prompt('الأيقونة / الإيموجي',a[i][1])||a[i][1]||'📌';n=n.trim();if(!n)return;a[i][0]=n;a[i][1]=ic;saveCats(a)}
+function moveCat(i,d){let a=cats(),j=i+d;if(j<0||j>=a.length)return;[a[i],a[j]]=[a[j],a[i]];saveCats(a)}
+function toggleCat(i){let s=settings();s.hiddenCats=Array.isArray(s.hiddenCats)?s.hiddenCats:[];let n=cats()[i][0];s.hiddenCats.includes(n)?s.hiddenCats=s.hiddenCats.filter(x=>x!==n):s.hiddenCats.push(n);persist(settingsKey,s);renderCats()}
+function delCat(i){let a=cats();if(a.length<=1)return;if(confirm('حذف القسم '+a[i][0]+'؟')){a.splice(i,1);saveCats(a)}}
+function resetCats(){if(confirm('استعادة الأقسام الافتراضية؟')){persist(catKey,seedCats);renderCats();renderCatSelect()}}
+
+function renderCats(){
+ const s=settings(),hidden=s.hiddenCats||[];
+ catList.innerHTML=cats().map((x,i)=>`<div class="catrow">
+ <div style="font-size:28px;text-align:center">${esc(x[1])}</div><div><b>${esc(x[0])}</b><br><small>الأيقونة: ${esc(x[1])} · ${hidden.includes(x[0])?'مخفي':'ظاهر'}</small></div>
+ <div class="cat-actions actions"><button onclick="editCat(${i})">✏️ تعديل</button><button onclick="moveCat(${i},-1)">⬆️</button><button onclick="moveCat(${i},1)">⬇️</button><button onclick="toggleCat(${i})">${hidden.includes(x[0])?'👁️ إظهار':'🙈 إخفاء'}</button><button class="danger" onclick="delCat(${i})">🗑️ حذف</button></div></div>`).join('')
+}
+function renderCatSelect(){cat.innerHTML=cats().map(x=>`<option>${esc(x[0])}</option>`).join('')}
+
+function setColor(id,textId,v){document.getElementById(id).value=v;document.getElementById(textId).value=v}
+function colorVal(id,textId,def){let v=document.getElementById(textId).value.trim()||def;return /^#[0-9a-f]{6}$/i.test(v)?v:def}
+function pickStyle(container,v){container.querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.v===v))}
+function getStyle(container){return container.querySelector('button.active')?.dataset.v||container.querySelector('button')?.dataset.v}
+const THEME_PRESETS={
+ ocean:{primary:'#087fe3',accent:'#ffbf16',bg:'#031b31',card:'#ffffff',cat:'circle',shop:'card'},
+ dark:{primary:'#38bdf8',accent:'#fbbf24',bg:'#0b1120',card:'#111827',cat:'cards',shop:'compact'},
+ green:{primary:'#159957',accent:'#f0b429',bg:'#06281d',card:'#ffffff',cat:'cards',shop:'card'},
+ purple:{primary:'#7c3aed',accent:'#f59e0b',bg:'#160b2e',card:'#ffffff',cat:'circle',shop:'card'},
+ warm:{primary:'#d97706',accent:'#b45309',bg:'#fff7ed',card:'#ffffff',cat:'cards',shop:'list'}
+};
+function applyThemePreset(name){
+ const t=THEME_PRESETS[name];if(!t)return;
+ setColor('primaryColor','primaryText',t.primary);setColor('accentColor','accentText',t.accent);setColor('bgColor','bgText',t.bg);setColor('cardColor','cardText',t.card);
+ pickStyle(catStyles,t.cat);pickStyle(shopStyles,t.shop);
+ document.querySelectorAll('#themePresets button').forEach(b=>b.classList.toggle('active',b.dataset.theme===name));
+}
+
+async function saveDesign(){
+ let s=settings();
+ s.primary=colorVal('primaryColor','primaryText','#087fe3');s.accent=colorVal('accentColor','accentText','#ffbf16');
+ s.bg=colorVal('bgColor','bgText','#031b31');s.card=colorVal('cardColor','cardText','#ffffff');
+ s.catStyle=getStyle(catStyles);s.shopStyle=getStyle(shopStyles);s.themePreset=document.querySelector('#themePresets button.active')?.dataset.theme||'custom';s.shopOrder=shopOrder.value;
+ s.shopLimit=Math.max(1,Math.min(100,Number(shopLimit.value)||20));
+ s.showCategories=showCategories.checked;s.showNewShops=showNewShops.checked;s.showWhy=showWhy.checked;s.showAdd=showAdd.checked;s.showFooter=showFooter.checked;
+ if(await persist(settingsKey,s)) alert('تم حفظ تصميم الواجهة بنجاح');
+ else alert('تعذر حفظ التصميم على السحابة. تأكد من اتصال Supabase ثم حاول مرة أخرى.');
+}
+
+function renderDesign(){
+ let s=settings();
+ setColor('primaryColor','primaryText',s.primary||'#087fe3');setColor('accentColor','accentText',s.accent||'#ffbf16');
+ setColor('bgColor','bgText',s.bg||'#031b31');setColor('cardColor','cardText',s.card||'#ffffff');
+ pickStyle(catStyles,s.catStyle||'circle');pickStyle(shopStyles,s.shopStyle||'card');
+ document.querySelectorAll('#themePresets button').forEach(b=>b.classList.toggle('active',b.dataset.theme===(s.themePreset||'custom')));
+ shopOrder.value=s.shopOrder||'newest';shopLimit.value=s.shopLimit||20;
+ showCategories.checked=s.showCategories!==false;showNewShops.checked=s.showNewShops!==false;
+ showWhy.checked=s.showWhy!==false;showAdd.checked=s.showAdd!==false;showFooter.checked=s.showFooter!==false;
+}
+async function compressFile(f,max=1600,q=.78){return new Promise((res,rej)=>{if(!f)return res('');let r=new FileReader();r.onload=()=>{let im=new Image();im.onload=()=>{let scale=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(im.width*scale));c.height=Math.max(1,Math.round(im.height*scale));c.getContext('2d').drawImage(im,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',q))};im.onerror=rej;im.src=r.result};r.onerror=rej;r.readAsDataURL(f)})}
+function arr(v){return String(v||'').split(',').map(x=>x.trim()).filter(Boolean)}
+
+async function saveSiteSettings(){
+ let s=settings();s.heroTitle=heroTitle.value.trim()||'دليل سلمية';s.heroSubtitle=heroSubtitle.value.trim()||'اكتشف أفضل المحلات والخدمات في مدينتك';
+ s.heroSubtag=heroSubtag.value.trim()||'تسوّق • تواصل • ادعم محلك المحلي';s.brandSmall=brandSmall.value.trim()||'كل ما تحتاجه في مكان واحد';s.whatsapp=siteWhatsapp.value.trim()||'963932629639';s.addButtonText=addButtonText.value.trim()||'+ إضافة محل عبر واتساب';s.addWhatsappMessage=addWhatsappMessage.value.trim()||'مرحباً، أرغب بإضافة محلي إلى دليل سلمية';
+ if(heroFile.files[0])s.heroImage=await compressFile(heroFile.files[0],1800,.78);if(siteLogoFile.files[0])s.logo=await compressFile(siteLogoFile.files[0],900,.82);
+ persist(settingsKey,s);renderSettings();alert('تم حفظ الهوية بنجاح')
+}
+function renderSettings(){
+ let s=settings();heroTitle.value=s.heroTitle||'دليل سلمية';heroSubtitle.value=s.heroSubtitle||'اكتشف أفضل المحلات والخدمات في مدينتك';
+ heroSubtag.value=s.heroSubtag||'تسوّق • تواصل • ادعم محلك المحلي';brandSmall.value=s.brandSmall||'كل ما تحتاجه في مكان واحد';siteWhatsapp.value=s.whatsapp||'963932629639';addButtonText.value=s.addButtonText||'+ إضافة محل عبر واتساب';addWhatsappMessage.value=s.addWhatsappMessage||'مرحباً، أرغب بإضافة محلي إلى دليل سلمية';
+ heroPreview.innerHTML=s.heroImage?`<img src="${s.heroImage}">`:'';logoPreview.innerHTML=s.logo?`<img src="${s.logo}">`:''
+}
+
+function whyDefaults(){return {title:'لماذا دليل سلمية؟',desc:'محلك أقرب لزبائنك، والزبون يلاقي كل شي بمكان واحد.',bgColor:'#eef8ff',bgColor2:'#e6f2fb',bgImage:'',overlay:.15,textColor:'#0a3152',descColor:'#7890a5',layout:'grid',items:[{icon:'📱',image:'',title:'متوافق مع الجوال',desc:'تجربة سهلة وسريعة.',color:'#0a3152',bg:'transparent',visible:true},{icon:'🛡️',image:'',title:'معلومات موثوقة',desc:'معلومات منظمة وواضحة.',color:'#0a3152',bg:'transparent',visible:true},{icon:'📍',image:'',title:'كل المحلات بمكان واحد',desc:'بدون بحث طويل.',color:'#0a3152',bg:'transparent',visible:true},{icon:'🏪',image:'',title:'صفحة خاصة لكل محل',desc:'صور وشعار وخدمات وعروض.',color:'#0a3152',bg:'transparent',visible:true}]};}
+function whySettings(){let s=settings(),d=whyDefaults(),w=s.why||{};return {...d,...w,items:Array.isArray(w.items)&&w.items.length?w.items:d.items};}
+function colorSet(id,val){let a=document.getElementById(id),b=document.getElementById(id+'Text');if(a)a.value=val||'#ffffff';if(b)b.value=val||'#ffffff';}
+function renderWhySettings(){let w=whySettings();whyTitle.value=w.title;whyDesc.value=w.desc;colorSet('whyBg1',w.bgColor);colorSet('whyBg2',w.bgColor2);colorSet('whyTextColor',w.textColor);colorSet('whyDescColor',w.descColor);whyOverlay.value=Math.round((Number(w.overlay)||0)*100);whyOverlayVal.textContent=whyOverlay.value+'%';whyBgPreview.innerHTML=w.bgImage?`<img src="${w.bgImage}">`:'';document.querySelectorAll('#whyLayouts button').forEach(b=>b.classList.toggle('active',b.dataset.v===(w.layout||'grid')));renderWhyItems();}
+function renderWhyItems(){let w=whySettings();whyItemsAdmin.innerHTML=(w.items||[]).map((x,i)=>`<div class="whyAdmin"><div class="whyAdminGrid"><div><label>الأيقونة / الرمز</label><input data-w="icon" data-i="${i}" value="${esc(x.icon||'⭐')}"><label>عنوان الميزة</label><input data-w="title" data-i="${i}" value="${esc(x.title||'')}"><label>الوصف</label><textarea data-w="desc" data-i="${i}" rows="2">${esc(x.desc||'')}</textarea></div><div><label>صورة الميزة</label><input data-file="${i}" type="file" accept="image/*"><div class="thumbs">${x.image?`<img class="mini" src="${x.image}">`:''}</div><div class="grid"><div><label>لون النص</label><input data-w="color" data-i="${i}" type="color" value="${x.color||'#0a3152'}"></div><div><label>خلفية البطاقة</label><input data-w="bg" data-i="${i}" type="color" value="${x.bg&&x.bg!='transparent'?x.bg:'#ffffff'}"></div></div></div></div><div class="whyAdminActions"><label class="whyVisible"><input data-w="visible" data-i="${i}" type="checkbox" ${x.visible!==false?'checked':''}> إظهار</label><button type="button" onclick="moveWhyItem(${i},-1)">⬆️</button><button type="button" onclick="moveWhyItem(${i},1)">⬇️</button><button type="button" class="danger" onclick="deleteWhyItem(${i})">🗑️ حذف</button></div></div>`).join('');}
+async function saveWhySettings(){let w=whySettings();w.title=whyTitle.value.trim()||'لماذا دليل سلمية؟';w.desc=whyDesc.value.trim();w.bgColor=whyBg1Text.value.trim()||whyBg1.value;w.bgColor2=whyBg2Text.value.trim()||whyBg2.value;w.textColor=whyTextText.value.trim()||whyTextColor.value;w.descColor=whyDescText.value.trim()||whyDescColor.value;w.overlay=(Number(whyOverlay.value)||0)/100;let active=[...document.querySelectorAll('#whyLayouts button.active')][0];w.layout=active?active.dataset.v:'grid';document.querySelectorAll('#whyItemsAdmin [data-w]').forEach(el=>{let i=Number(el.dataset.i),k=el.dataset.w;if(k==='visible')w.items[i][k]=el.checked;else w.items[i][k]=el.value;});for(let i=0;i<w.items.length;i++){let f=document.querySelector(`[data-file="${i}"]`);if(f&&f.files[0])w.items[i].image=await compressFile(f.files[0],700,.8);if(w.items[i].bg==='#ffffff' && !document.querySelector(`[data-w="bg"][data-i="${i}"]`).value)w.items[i].bg='transparent';}let s=settings();s.why=w;if(await persist(settingsKey,s)){renderWhySettings();alert('تم حفظ قسم لماذا دليل سلمية')}else alert('تعذر حفظ القسم على السحابة. تأكد من اتصال Supabase ثم حاول مرة أخرى.');}
+function addWhyItem(){let s=settings(),w=whySettings();w.items.push({icon:'⭐',image:'',title:'ميزة جديدة',desc:'اكتب وصف الميزة هنا.',color:'#0a3152',bg:'transparent',visible:true});s.why=w;persist(settingsKey,s);renderWhySettings();}
+function deleteWhyItem(i){let w=whySettings();if(!confirm('حذف هذه الميزة؟'))return;w.items.splice(i,1);let s=settings();s.why=w;persist(settingsKey,s);renderWhySettings();}
+function moveWhyItem(i,d){let w=whySettings(),j=i+d;if(j<0||j>=w.items.length)return;[w.items[i],w.items[j]]=[w.items[j],w.items[i]];let s=settings();s.why=w;persist(settingsKey,s);renderWhySettings();}
+function removeWhyBg(){let s=settings(),w=whySettings();w.bgImage='';s.why=w;persist(settingsKey,s);renderWhySettings();}
+whyBgFile.addEventListener('change',async()=>{if(!whyBgFile.files[0])return;let s=settings(),w=whySettings();w.bgImage=await compressFile(whyBgFile.files[0],1800,.78);s.why=w;persist(settingsKey,s);renderWhySettings();});
+['whyBg1','whyBg2','whyTextColor','whyDescColor'].forEach(id=>document.getElementById(id).addEventListener('input',e=>{let t=document.getElementById(id+'Text');if(t)t.value=e.target.value;}));
+['whyBg1Text','whyBg2Text','whyTextText','whyDescText'].forEach(id=>document.getElementById(id).addEventListener('change',e=>{let c=id.replace('Text','');let el=document.getElementById(c);if(/^#[0-9a-fA-F]{6}$/.test(e.target.value))el.value=e.target.value;}));
+document.querySelectorAll('#whyLayouts button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('#whyLayouts button').forEach(x=>x.classList.remove('active'));b.classList.add('active');}));
+
+async function saveShop(){
+ let n=name.value.trim();if(!n)return alert('اكتب اسم المحل');let a=data(),old=a.find(x=>x.id===editId)||{};
+ let obj={...old,id:editId||Date.now(),name:n,cat:cat.value,phone:phone.value.trim(),whatsapp:whatsapp.value.trim(),address:address.value.trim(),desc:desc.value.trim(),theme:theme.value,slogan:slogan.value.trim(),services:arr(services.value),offers:arr(offers.value),maps:maps.value.trim(),hours:{morningOpen:openMorning.value,morningClose:closeAfternoon.value,eveningOpen:openEvening.value,eveningClose:closeEvening.value},createdAt:old.createdAt||Date.now(),rating:old.rating||'4.8',reviews:old.reviews||'0'};
+ if(logoFile.files[0])obj.logo=await compressFile(logoFile.files[0],900,.82);else obj.logo=old.logo||'';if(coverFile.files[0])obj.cover=await compressFile(coverFile.files[0],1800,.78);else obj.cover=old.cover||'';
+ let existing=Array.isArray(old.gallery)?old.gallery:[],newImgs=[];for(const f of Array.from(galleryFiles.files||[]))newImgs.push(await compressFile(f,1400,.76));obj.gallery=[...existing,...newImgs];
+ let i=a.findIndex(x=>x.id===editId);if(i>=0)a[i]=obj;else a.push(obj);persist(key,a);resetForm();render();alert('تم حفظ المحل بنجاح')
+}
+function edit(id){
+ let x=data().find(x=>x.id===id);if(!x)return;editId=id;name.value=x.name||'';cat.value=x.cat||cats()[0][0];phone.value=x.phone||'';whatsapp.value=x.whatsapp||'';address.value=x.address||'';desc.value=x.desc||'';
+ theme.value=x.theme||'#087ee3';slogan.value=x.slogan||'';services.value=(x.services||[]).join(', ');offers.value=(x.offers||[]).join(', ');maps.value=x.maps||'';
+ let h=typeof x.hours==='object'?x.hours:{morningOpen:'09:00',morningClose:'13:00',eveningOpen:'16:00',eveningClose:'22:00'};
+ openMorning.value=h.morningOpen||'';closeAfternoon.value=h.morningClose||'';openEvening.value=h.eveningOpen||'';closeEvening.value=h.eveningClose||'';
+ logoShopPreview.innerHTML=x.logo?`<img src="${x.logo}">`:'';coverShopPreview.innerHTML=x.cover?`<img src="${x.cover}">`:'';galleryPreview.innerHTML=(x.gallery||[]).map(i=>`<img src="${i}">`).join('');scrollTo({top:0,behavior:'smooth'})
+}
+function del(id){if(confirm('حذف المحل؟')){persist(key,data().filter(x=>x.id!==id));render()}}
+function resetForm(){editId=null;['name','phone','whatsapp','address','desc','slogan','services','offers','maps'].forEach(id=>document.getElementById(id).value='');theme.value='#087ee3';openMorning.value='09:00';closeAfternoon.value='13:00';openEvening.value='16:00';closeEvening.value='22:00';logoFile.value='';coverFile.value='';galleryFiles.value='';logoShopPreview.innerHTML=coverShopPreview.innerHTML=galleryPreview.innerHTML='';renderCatSelect()}
+function render(){list.innerHTML=data().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).map(x=>`<div class="row"><b>${esc(x.name)}</b> <span class="pill">${esc(x.cat)}</span><br><small>${esc(x.phone||'')}　${esc(x.address||'')}</small><p>${esc(x.slogan||x.desc||'')}</p><div class="actions"><a class="btn" href="shop.html?id=${encodeURIComponent(x.id)}">فتح صفحة المحل</a><button onclick="edit(${x.id})">✏️ تعديل</button><button class="danger" onclick="del(${x.id})">🗑️ حذف</button></div></div>`).join('')||'<p class="hint">لا يوجد محلات بعد.</p>'}
+
+[heroFile,siteLogoFile,logoFile,coverFile,galleryFiles].forEach(el=>el.addEventListener('change',()=>{let target={heroFile:heroPreview,siteLogoFile:logoPreview,logoFile:logoShopPreview,coverFile:coverShopPreview,galleryFiles:galleryPreview}[el.id];if(el.multiple){target.innerHTML='';Array.from(el.files).forEach(f=>{let r=new FileReader();r.onload=()=>target.innerHTML+=`<img src="${r.result}">`;r.readAsDataURL(f)})}else if(el.files[0]){let r=new FileReader();r.onload=()=>target.innerHTML=`<img src="${r.result}">`;r.readAsDataURL(el.files[0])}}));
+
+catStyles.querySelectorAll('button').forEach(b=>b.onclick=()=>{pickStyle(catStyles,b.dataset.v)});
+shopStyles.querySelectorAll('button').forEach(b=>b.onclick=()=>{pickStyle(shopStyles,b.dataset.v)});
+[primaryColor,accentColor,bgColor,cardColor].forEach((el)=>el.addEventListener('input',()=>{let t={primaryColor:primaryText,accentColor:accentText,bgColor:bgText,cardColor:cardText}[el.id];t.value=el.value}));
+[primaryText,accentText,bgText,cardText].forEach((el)=>el.addEventListener('input',()=>{if(/^#[0-9a-f]{6}$/i.test(el.value)){let c={primaryText:primaryColor,accentText:accentColor,bgText:bgColor,cardText:cardColor}[el.id];c.value=el.value}}));
+
+renderSettings();renderDesign();renderWhySettings();renderCats();renderCatSelect();render();
+
+// تحديث لوحة الإدارة إذا عدّل الموقع البيانات من نافذة أخرى.
+window.addEventListener('storage',e=>{
+  if([key,catKey,settingsKey].includes(e.key)){
+    renderSettings();renderDesign();renderWhySettings();renderCats();renderCatSelect();render();
+  }
+});
+</script>
+<script>
+(async function(){
+  const status=document.getElementById('cloudStatus');
+  const finish=()=>hydrateCloud().then(()=>{if(status)status.textContent='☁️ متصل بـ Supabase — البيانات تتم مزامنتها تلقائياً';}).catch(()=>{if(status)status.textContent='⚠️ تعذر الاتصال بالسحابة — سيتم استخدام النسخة المحلية مؤقتاً';});
+  if(window.supabase&&typeof window.supabase.createClient==='function'){sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);finish();return;}
+  const sc=document.createElement('script');sc.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';sc.async=true;
+  sc.onload=()=>{try{sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);finish();}catch(e){if(status)status.textContent='⚠️ تعذر الاتصال بالسحابة — سيتم استخدام النسخة المحلية مؤقتاً';}};
+  sc.onerror=()=>{if(status)status.textContent='⚠️ تعذر تحميل خدمة السحابة — البيانات المحلية تعمل بشكل طبيعي';};
+  document.head.appendChild(sc);
+})();
+</script>
+</body></html>
+</body></html>
